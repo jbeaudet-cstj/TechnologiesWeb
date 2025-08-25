@@ -1,11 +1,14 @@
-.titre
-{
+.titre {
     background-color: black;
     color: yellow;
 }
 
-.contenu
-{
+.contenu {
     background-color: green;
     color: blue;
+}
+
+body {
+    background: url(arrierePlan.jpg) no-repeat;
+    background-size: cover;
 }
