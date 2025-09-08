@@ -3,7 +3,8 @@
 
 <template>
   <header>
-    <h1>La pensée du jour</h1>
+    <!-- Le chemin / pointe directement dans le dossier public -->
+    <img src="/logo.png" alt="La pensée du jour">
   </header>
 </template>
 
