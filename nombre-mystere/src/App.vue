@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+// On a besoin de computed pour créer des références qui dépendent de l'évaluation d'une expression
+import { ref, computed } from 'vue'
 
 // Typescript permet de définir des unions: une liste de valeurs possibles qui définit un nouveau type
 type Resultat = "haut" | "bas" | "succes" | "invalide" | "max"
@@ -9,19 +10,43 @@ const max = 100
 const maxTentatives = 7
 
 const nbTentatives = ref(0)
-// Math.randon() --> nombre réel entre 0 (inclus) et 1 (non inclus): 0 .. 0.9999999999999999999999999999999
-// Math.randon() * 100 --> 0 .. 99.9999999999999999
-// Math.floor(...) --> 0 .. 99
-// 1 + ... --> 1 .. 100
-const nombreMystere = ref(min + Math.floor(Math.random() * max))
+const nombreMystere = ref(genererNbMystere())
 // S'il n'y a pas de valeur initiale, la valeur est 'undefined'
 // Pour indiquer le type de la variable, on le met entre <>
 const tentative = ref<number>()
 const derniereTentative = ref<number>()
 const resultat = ref<Resultat>()
+const listeTentatives = ref<string[]>([])
+
+// La référence est initialisée selon le résultat, mais sa valeur ne change plus
+// Il faut la modifier dans une fonction si le résultat change
+// gameOver = ...
+//const gameOver = ref<boolean>(resultat.value == 'succes' || resultat.value == 'max')
+
+// computed permet de définir une référence qui contient l'évalation d'une expression
+// Si resultat change, la valeur calculée change en même temps
+// Il faut donner en argument une fonction qui calcule l'expression
+const gameOver = computed<boolean>(() => resultat.value == 'succes' || resultat.value == 'max')
 
 
-function verifier() {
+function genererNbMystere(): number {
+// Math.randon() --> nombre réel entre 0 (inclus) et 1 (non inclus): 0 .. 0.9999999999999999999999999999999
+// Math.randon() * 100 --> 0 .. 99.9999999999999999
+// Math.floor(...) --> 0 .. 99
+// 1 + ... --> 1 .. 100
+  return min + Math.floor(Math.random() * max)
+}
+
+
+function rejouer(): void {
+  nombreMystere.value = genererNbMystere()
+  nbTentatives.value = 0
+  resultat.value = undefined
+  listeTentatives.value.length = 0
+}
+
+
+function verifier(): void {
   // Il faut vérifier si tentative contient une valeur
   if (tentative.value) {
     derniereTentative.value = tentative.value
@@ -43,10 +68,12 @@ function verifier() {
       else if (derniereTentative.value > nombreMystere.value) {
         // Trop haut
         resultat.value = "haut"
+        ajouterAListe()
       }
       else { // derniereTentative.value < nombreMystere.value
         // Trop bas
         resultat.value = "bas"
+        ajouterAListe()
       }
     }
     else {
@@ -54,6 +81,10 @@ function verifier() {
      resultat.value = "invalide"
     }
   }
+}
+
+function ajouterAListe() {
+  listeTentatives.value.push(derniereTentative.value + " : " + resultat.value)
 }
 </script>
 
@@ -66,8 +97,9 @@ function verifier() {
   <!-- v-bind est unidirectionnelle, elle ne permet pas de récupérer la valeur de la page
        Pour avoir un échange bidirectionnel, il faut utiliser la directive v-model -->
   <input type="number" placeholder="Tentative" :min="min" :max="max" v-model="tentative" @keyup.enter="verifier"
-         :disabled="resultat ==='succes' || resultat === 'max'">
-  <button :disabled="!tentative" @click="verifier">Vérifier</button>
+         :disabled="gameOver">
+  <button v-if="gameOver" @click="rejouer">Rejouer</button>
+  <button v-else :disabled="!tentative" @click="verifier">Vérifier</button>
   <p>{{ nbTentatives > 0 ? nbTentatives + " tentative" : "" }}{{ nbTentatives > 1 ? "s" : "" }}</p>
 
   <h3>Résultat</h3>
@@ -77,6 +109,11 @@ function verifier() {
   <p v-else-if="resultat === 'invalide'" class="blanc invalide">{{ derniereTentative }} est invalide</p>
   <p v-else-if="resultat === 'max'" class="blanc invalide">Nombre maximum de tentatives atteint, le nombre mystère était {{  nombreMystere }}</p>
   <p v-else></p>
+
+  <hr>
+  <ul>
+    <li v-for="essai in listeTentatives">{{ essai }}</li>
+  </ul>
 </template>
 
 
