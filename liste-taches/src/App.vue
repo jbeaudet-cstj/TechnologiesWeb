@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 
 // En JavaScript il est possible de définir des variables de type 'objet'
@@ -28,9 +28,12 @@ class Tache implements ITache {
 }
 
 const listeTaches = ref<ITache[]>([])
-/* listeTaches.value.push(new Tache("Tâche 1")) */
+listeTaches.value.push(new Tache("Tâche 1"))
+listeTaches.value.push(new Tache("Tâche 2"))
+listeTaches.value.push(new Tache("Tâche 3"))
+listeTaches.value.push(new Tache("Tâche 4"))
 
-const listeAFaire = ref<ITache[]>(listeTaches.value.filter(t => !t.estTerminee))
+const listeAFaire = computed<ITache[]>(() => listeTaches.value.filter(t => !t.estTerminee))
 
 const estRouge = ref(false)
 const estGris = ref(false)
@@ -38,6 +41,16 @@ const estGris = ref(false)
 
 <template>
    <h1 :class="{ rouge: estRouge, gris: estGris }">Ceci est un test</h1>
+
+   <ul>
+      <!-- Si le contenu de la liste change dynamiquement (suppression, ajout au milieu, réordonnancement)
+           l'affichage ne se mettra pas à jour correctement
+           Pour s'assurer d'un affichage correct, il faut associer à chaque élément un identifiant
+           unique avec l'attribut :key (utilisable uniquement avec v-for) -->
+      <li v-for="tache in listeAFaire" :key="tache.id">
+         <input type="checkbox" v-model="tache.estTerminee">{{ tache.id }} : {{ tache.description }}
+      </li>
+   </ul>
 </template>
 
 <style scoped>
