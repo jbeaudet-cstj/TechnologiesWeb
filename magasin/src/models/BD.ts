@@ -1,6 +1,7 @@
+import { ref } from "vue"
 import type { IProduit } from "@/models/IProduit.ts"
 
-export const bd: IProduit[] = [
+export const bd = ref<IProduit[]>([
   {
      id: 5217,
      nom: "T-Shirt en coton biologique",
@@ -25,4 +26,4 @@ export const bd: IProduit[] = [
      inventaire: 8,
      avis: []
   }
-]
+])
