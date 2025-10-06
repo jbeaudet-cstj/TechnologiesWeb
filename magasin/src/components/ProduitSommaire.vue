@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { IProduit } from "@/models/IProduit.ts"
+import Bouton from "@/components/Bouton.vue"
 
 // Cette interface permet de définir les paramètres que le composant peut recevoir
 interface IProps {
@@ -36,7 +37,7 @@ function ajouterAuPanier() {
     <div>
       <h2>{{ produit?.nom }}</h2>
       <p>{{ produit?.prix }}$</p>
-      <button :disabled="produit.inventaire === 0" @click="ajouterAuPanier">Ajouter au panier</button>
+      <Bouton :disabled="produit.inventaire === 0" @click="ajouterAuPanier">Ajouter au panier</Bouton>
     </div>
   </div>
 </template>

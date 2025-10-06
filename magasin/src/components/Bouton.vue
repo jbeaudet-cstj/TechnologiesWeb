@@ -3,6 +3,9 @@
 
 
 <template>
+  <!-- Il est possible de mettre un contenu par défaut utilisé si rien n'est donné au composant -->
+   <!-- button est le seul élément dans le template -->
+    <button><slot>Cliquez moi</slot></button>
 </template>
 
 
