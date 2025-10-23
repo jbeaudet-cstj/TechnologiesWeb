@@ -14,13 +14,33 @@ const sortBy = ref<string>()
 const sortOrder = ref<string>()
 
 
+function addToQuery(query: string, tag: string, value: any): string {
+  if (value) {
+    query = (query ? `${query}&` : '?') + `${tag}=${value}`
+  }
+  return query
+}
+
+
 async function getEmployes() {
    debut.value = false
    employes.value = null
    erreur.value = null
 
+   let url = 'https://boringapi.com/api/v1/employees/'
+   let query = ''
+
+
+   query = addToQuery(query, 'search', search.value)
+   query = addToQuery(query, 'page', page.value)
+   query = addToQuery(query, 'limit', limit.value)
+   query = addToQuery(query, 'sort_by', sortBy.value)
+   query = addToQuery(query, 'sort_order', sortOrder.value)
+
+   console.log(`${url}${query}`)
+
    try {
-      employes.value = await getData<IEmployees>('https://boringapi.com/api/v1/employees/')
+      employes.value = await getData<IEmployees>(`${url}${query}`)
    }
    catch (e) {
       erreur.value = (e instanceof Error ? e.message : 'Erreur inconnue')

@@ -3,9 +3,11 @@ import { ref } from 'vue'
 import Utilisateurs from '@/components/Utilisateurs.vue'
 import Utilisateur from '@/components/Utilisateur.vue'
 import Employes from './components/Employes.vue'
+import UtilisateurV2 from '@/components/UtilisateurV2.vue'
+import Commentaire from '@/components/Commentaire.vue'
 
-const listeComponents = [ Utilisateurs, Utilisateur, Employes ]
-const composants = [ 'Utilisateurs', 'Utilisateur', 'Employés' ]
+const listeComponents = [ Utilisateurs, Utilisateur, Employes, UtilisateurV2, Commentaire ]
+const composants = [ 'Utilisateurs', 'Utilisateur', 'Employés', 'Utilisateur version 2', 'Commentaires' ]
 const selection = ref(0)
 </script>
 
