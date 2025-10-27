@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { IComment, INewComment } from '@/models/Comment';
+import type { IComment, INewComment, IUpdatedComment } from '@/models/Comment';
+import { invokeMethod } from '@/utils/connexion';
 
 const postId = ref<number>()
 const nom = ref<string>()
@@ -23,6 +24,8 @@ async function creerCommentaire() {
     }
 
     try {
+      commentaire.value = await invokeMethod<INewComment, IComment>('https://jsonplaceholder.typicode.com/comments', 'POST', nouveau)
+      /*
       const reponse = await fetch('https://jsonplaceholder.typicode.com/comments', {
         method: 'POST',
         body: JSON.stringify(nouveau),
@@ -37,10 +40,26 @@ async function creerCommentaire() {
       }
 
       commentaire.value = await reponse.json()
+      */
     }
     catch (e) {
-      erreur.value = e.message
+      erreur.value = (e instanceof Error ? e.message : 'Erreur inconnue')
     }
+  }
+}
+
+
+async function modifierCommentaire() {
+  commentaire.value = null
+  let modification: IUpdatedComment = {
+    email: 'test@example.com'
+  }
+
+  try {
+    commentaire.value = await invokeMethod<IUpdatedComment, IComment>('https://jsonplaceholder.typicode.com/comments/2', 'PATCH', modification)
+  }
+  catch (e) {
+      erreur.value = (e instanceof Error ? e.message : 'Erreur inconnue')
   }
 }
 </script>
@@ -55,6 +74,7 @@ async function creerCommentaire() {
   <p><label>Email: </label><input type="text" v-model="email"></p>
   <p><label>Body: </label><input type="text" v-model="body"></p>
   <button @click="creerCommentaire">Créer commentaire</button>
+  <button @click="modifierCommentaire">Modifier commentaire</button>
 
   <div v-if="erreur">
     <p>Erreur: {{ erreur }}</p>
