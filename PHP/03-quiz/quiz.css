@@ -1,0 +1,12 @@
+.reponse {
+  font-size: 12pt;
+  font-weight: bold;
+}
+
+.ok {
+  color: green
+}
+
+.error {
+  color: red;
+}
