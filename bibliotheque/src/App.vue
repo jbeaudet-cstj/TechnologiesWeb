@@ -12,6 +12,7 @@ interface ILoan {
 
 type INewLoan = Omit<ILoan, 'id' | 'loan_date' | 'return_date'>
 
+type IUpdateLoan = Partial<ILoan>
 
 const membre = ref<number>()
 const livre  = ref<number>()
@@ -19,6 +20,13 @@ const livre  = ref<number>()
 const nouvelEmprunt = ref<ILoan | null>(null)
 const nouvelleErreur = ref<string | null>(null)
 const nouveauDebut = ref(true)
+
+
+const idEmprunt = ref<number>()
+const retourEmprunt = ref<ILoan | null>(null)
+const retourErreur = ref<string | null>(null)
+const retourDebut = ref(true)
+
 
 
 async function creerEmprunt() {
@@ -43,6 +51,28 @@ async function creerEmprunt() {
     }
   }
 }
+
+
+async function retournerEmprunt() {
+  if (idEmprunt.value) {
+    retourErreur.value = null
+    retourEmprunt.value = null
+    retourDebut.value = false
+
+    let retour: IUpdateLoan = {
+      id: idEmprunt.value
+    }
+
+    idEmprunt.value = undefined
+
+    try {
+      retourEmprunt.value = await invokeMethod('http://localhost/projets-php-joel/07-Bibliotheque/loans.php', 'PATCH', retour)
+    }
+    catch (e) {
+      retourErreur.value = e.message
+    }
+  }
+}
 </script>
 
 
@@ -60,6 +90,22 @@ async function creerEmprunt() {
     <pre>{{ nouvelEmprunt }}</pre>
   </div>
   <div v-else-if="!nouveauDebut">
+    <p>Chargement en cours...</p>
+  </div>
+
+  <hr>
+
+  <h1>Retour d'emprunt</h1>
+  <p><label>Id: </label><input type="text" v-model="idEmprunt"></p>
+  <button @click="retournerEmprunt">Retourner</button>
+
+  <div v-if="retourErreur">
+    <p>Une erreur est survenue: {{ retourErreur }}</p>
+  </div>
+  <div v-else-if="retourEmprunt">
+    <pre>{{ retourEmprunt }}</pre>
+  </div>
+  <div v-else-if="!retourDebut">
     <p>Chargement en cours...</p>
   </div>
 </template>
